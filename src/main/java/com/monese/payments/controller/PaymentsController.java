@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("payments/v1/")
@@ -30,7 +32,7 @@ public class PaymentsController {
 
     private Logger logger = LoggerFactory.getLogger(PaymentsController.class);
 
-    @GetMapping("/ping")
+    @RequestMapping(value = "/ping",method = RequestMethod.GET)
     public String ping() {
         return "I am up";
     }
@@ -43,8 +45,10 @@ public class PaymentsController {
         logger.debug("Received funds transfer request {} ", transferRequest);
         TransactionResponse response = transactionServiceHandler.fundTransfer(transferRequest);
         if (response.getCode() != 200) {
+            logger.debug("Error in funds transfer process {} ", transferRequest);
             return new ResponseEntity<TransactionResponse>(response, HttpStatus.BAD_REQUEST);
         } else {
+            logger.debug("Successfully completed funds transfer process {} ", transferRequest);
             return new ResponseEntity<TransactionResponse>(response, HttpStatus.OK);
 
         }
@@ -53,16 +57,18 @@ public class PaymentsController {
 
     @RequestMapping(value = "/transactions/history", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Page<Transaction> transactionHistory(@NotNull Pageable pageable, @PathParam("accountNumber") String accountNumber) {
+    public ResponseEntity<Page<Transaction>> transactionHistory(@NotNull Pageable pageable, @RequestParam("accountNumber") String accountNumber) {
 
         logger.debug("Received transaction history request {} ", accountNumber);
         Page<Transaction> transactionPages;
         try {
             transactionPages = transactionHistoryService.getTransactionHistory(pageable, accountNumber);
-            return transactionPages;
+            return new ResponseEntity<Page<Transaction>>(transactionPages,HttpStatus.OK);
 
         } catch (AccountException e) {
-            return null;
+            transactionPages=new PageImpl<Transaction>(new ArrayList<Transaction>());
+            return new ResponseEntity<Page<Transaction>>(transactionPages,HttpStatus.BAD_REQUEST);
+
         }
     }
 }

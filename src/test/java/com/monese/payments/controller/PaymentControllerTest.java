@@ -66,8 +66,8 @@ public class PaymentControllerTest {
     public void testTransactionHistory_Success_Scenario() {
         try {
             Mockito.when(transactionHistoryService.getTransactionHistory(Mockito.any(Pageable.class), Mockito.anyString())).thenReturn(TestDataProvider.getPageTransactions());
-            Page<Transaction> responsePage = paymentsController.transactionHistory(Mockito.any(Pageable.class), Mockito.anyString());
-            Assert.assertEquals(responsePage.getTotalElements(), TestDataProvider.getPageTransactions().getTotalElements());
+            ResponseEntity<Page<Transaction>> responsePage = paymentsController.transactionHistory(Mockito.any(Pageable.class), Mockito.anyString());
+            Assert.assertEquals(responsePage.getBody().getTotalElements(), TestDataProvider.getPageTransactions().getTotalElements());
         } catch (AccountException e) {
             e.printStackTrace();
         }
@@ -77,8 +77,8 @@ public class PaymentControllerTest {
     public void testTransactionHistory_Failure_Scenario() {
         try {
             Mockito.when(transactionHistoryService.getTransactionHistory(Mockito.any(Pageable.class), Mockito.anyString())).thenThrow(new AccountException("Account doesn't exist"));
-            Page<Transaction> responsePage = paymentsController.transactionHistory(Mockito.any(Pageable.class), Mockito.anyString());
-            Assert.assertEquals(responsePage, null);
+            ResponseEntity<Page<Transaction>> responsePage = paymentsController.transactionHistory(Mockito.any(Pageable.class), Mockito.anyString());
+            Assert.assertEquals(responsePage.getBody().getTotalElements(), 0);
         } catch (AccountException e) {
 
         }

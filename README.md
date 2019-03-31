@@ -3,20 +3,23 @@ Payments API
 This REST API enables fund transfer from one account to another account.
 
 Technologies Used:
-SpringBoot,JPA,JWT,MySql
+SpringBoot,JPA,JWT (OAuth2),MySql
 
 How to Run?
 Clone the project.
 Import Schema from binaries/schema.sql
 Change credentials of database in application.properties
 
+Assumptions:
+Pre-defined accounts available in database.
+
 To Test the API
 
-Generate Bearer Token
 1. localhost:8080/payments/v1/ping
 
     Check for response "I am up"
 
+Generate Bearer Token
 2. localhost:8080/oauth/token
 
 Request Body
@@ -39,6 +42,7 @@ Sample Response
     "jti": "8abfb347-3157-437f-a2ad-27db3a569c79"
 }
 
+Note: Token expires in 6 minutes, would need to generate token again.
 
 3. localhost:8080/payments/v1/transactions/transferFund
 
@@ -63,7 +67,10 @@ Sample Response Body
 4.localhost:8080/payments/v1/transactions/history?accountNumber=9638527410&page=0&size=12
 
 Use Bearer token generated above to initiate the transaction
-path-params: accountNumber=9638527410
+query-params:
+    accountNumber=9638527410
+    page=0
+    size=12
 
 Sample Response
 {

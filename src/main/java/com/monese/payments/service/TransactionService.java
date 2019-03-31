@@ -7,9 +7,12 @@ import com.monese.payments.model.Transaction;
 import com.monese.payments.model.response.TransactionResponse;
 import com.monese.payments.repositories.AccountsRepository;
 import com.monese.payments.repositories.TransactionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -21,6 +24,9 @@ public class TransactionService {
     @Autowired
     private AccountsRepository accountsRepository;
 
+    private Logger logger = LoggerFactory.getLogger(TransactionService.class);
+
+
     public TransactionResponse fundTransfer(Account fromAccount, Account toAccount, Long amount) throws PaymentsGlobalException {
         if (fromAccount.getAccountNumber() < toAccount.getAccountNumber()) {
             synchronized (fromAccount) {
@@ -31,11 +37,12 @@ public class TransactionService {
                 return doTransfer(fromAccount, toAccount, amount);
             }
         } else {
+            logger.error("Error in Fund Transfer");
             throw new PaymentsGlobalException("From and To accounts cannot be same");
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.SERIALIZABLE,propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private TransactionResponse doTransfer(Account fromAccount, Account toAccount, Long amount) throws AmountException {
         Transaction tx = transactionRepository.save(new Transaction(fromAccount.getAccountNumber(), toAccount.getAccountNumber(), amount, "I", "INITIATED"));
         try {

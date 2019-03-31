@@ -44,6 +44,7 @@ public class TransactionServiceHandler {
         try {
             return transactionService.fundTransfer(fromAccount, toAccount, transactionRequest.getAmount());
         } catch (PaymentsGlobalException e) {
+            logger.error("Exception in Fund Transfer:", e.getMessage());
             return new TransactionResponse(transactionRequest.getFromAccount(), transactionRequest.getToAccount(), 500, "F", e.getMessage());
         }
 
