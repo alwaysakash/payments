@@ -192,4 +192,15 @@ Sample Response
     "numberOfElements": 12,
     "sort": null,
     "first": true
+
+   5 localhost:8080/payments/v1/transactions/balance?accountNumber=9638527410
+    Query-params:
+        accountNumber=9638527410
+
+    Sample Response:
+    {
+        "accountNumber": 9638527410,
+        "accountBalance": 1506
+    }
+
 }
