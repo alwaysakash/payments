@@ -3,6 +3,7 @@ package com.monese.payments.controller;
 import com.monese.payments.exception.AccountException;
 import com.monese.payments.model.Transaction;
 import com.monese.payments.model.request.TransactionRequest;
+import com.monese.payments.model.response.AccountResponse;
 import com.monese.payments.model.response.TransactionResponse;
 import com.monese.payments.service.TransactionHistoryService;
 import com.monese.payments.service.TransactionServiceHandler;
@@ -70,5 +71,23 @@ public class PaymentsController {
             return new ResponseEntity<Page<Transaction>>(transactionPages,HttpStatus.BAD_REQUEST);
 
         }
+    }
+    @RequestMapping(value = "/transactions/balance", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<AccountResponse> balance(@RequestParam("accountNumber") String accountNumber) {
+
+        logger.debug("Received account balance request {} ", accountNumber);
+        AccountResponse response = null;
+        try {
+            response = transactionServiceHandler.getAccountBalance(accountNumber);
+            logger.debug("Successfully completed account balance request {} ", accountNumber);
+            return  new ResponseEntity<AccountResponse>(response,HttpStatus.OK);
+
+        } catch (AccountException e) {
+            logger.debug("Error in account balance request {} ", accountNumber);
+            return new ResponseEntity<AccountResponse>(response,HttpStatus.BAD_REQUEST);
+        }
+
+
     }
 }

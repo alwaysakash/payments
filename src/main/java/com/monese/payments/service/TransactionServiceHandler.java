@@ -5,6 +5,7 @@ import com.monese.payments.exception.AmountException;
 import com.monese.payments.exception.PaymentsGlobalException;
 import com.monese.payments.model.Account;
 import com.monese.payments.model.request.TransactionRequest;
+import com.monese.payments.model.response.AccountResponse;
 import com.monese.payments.model.response.TransactionResponse;
 import com.monese.payments.repositories.AccountsRepository;
 import com.monese.payments.validators.AccountValidator;
@@ -52,5 +53,12 @@ public class TransactionServiceHandler {
 
     private void validateRequest(TransactionRequest transactionRequest) throws AccountException, AmountException {
         accountValidator.validateTransaction(transactionRequest);
+    }
+
+    public AccountResponse getAccountBalance(String accountNumber) throws AccountException {
+        accountValidator.validateAccount(accountNumber,"Account Exists","Account doesn't exist");
+        Account accountDetails=accountsRepository.findOne(Long.parseLong(accountNumber));
+        AccountResponse accountResponse= new AccountResponse(accountDetails.getAccountNumber(),accountDetails.getBalance());
+        return accountResponse;
     }
 }

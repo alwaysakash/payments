@@ -2,6 +2,7 @@ package com.monese.payments.utils;
 
 import com.monese.payments.model.Transaction;
 import com.monese.payments.model.request.TransactionRequest;
+import com.monese.payments.model.response.AccountResponse;
 import com.monese.payments.model.response.TransactionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,6 +44,10 @@ public class TestDataProvider {
         transactionRequest.setFromAccount("963852741");
         transactionRequest.setToAccount("9635287412");
         return transactionRequest;
+    }
+
+    public static AccountResponse getAccountResponse(){
+        return new AccountResponse(Long.parseLong("963852710"),Long.parseLong("25000"));
     }
 
 

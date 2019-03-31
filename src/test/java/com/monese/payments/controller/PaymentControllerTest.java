@@ -3,6 +3,7 @@ package com.monese.payments.controller;
 import com.monese.payments.exception.AccountException;
 import com.monese.payments.model.Transaction;
 import com.monese.payments.model.request.TransactionRequest;
+import com.monese.payments.model.response.AccountResponse;
 import com.monese.payments.model.response.TransactionResponse;
 import com.monese.payments.service.TransactionHistoryService;
 import com.monese.payments.service.TransactionServiceHandler;
@@ -82,6 +83,19 @@ public class PaymentControllerTest {
         } catch (AccountException e) {
 
         }
+    }
+
+    @Test
+    public void testBalance(){
+        try {
+            Mockito.when(transactionServiceHandler.getAccountBalance(Mockito.anyString())).thenReturn(TestDataProvider.getAccountResponse());
+            ResponseEntity<AccountResponse> response=paymentsController.balance(Mockito.anyString());
+            Assert.assertEquals(response.getBody().getAccountNumber(),TestDataProvider.getAccountResponse().getAccountNumber());
+        } catch (AccountException e) {
+            Assert.fail();
+            e.printStackTrace();
+        }
+
     }
 
 }
